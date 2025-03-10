@@ -1,0 +1,11 @@
+{{- if .Values.serviceEntry.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: {{ include "my-app-template.fullname" . }}-service-entry
+spec:
+  hosts: {{ toYaml .Values.serviceEntry.hosts | nindent 2 }}
+  addresses: {{ toYaml .Values.serviceEntry.addresses | nindent 2 }}
+  ports: {{ toYaml .Values.serviceEntry.ports | nindent 2 }}
+  location: MESH_EXTERNAL
+{{- end }}

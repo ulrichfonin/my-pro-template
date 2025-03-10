@@ -1,0 +1,8 @@
+{{- if .Values.roleBinding.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "my-app-template.fullname" . }}-rolebinding
+subjects: {{ toYaml .Values.roleBinding.subjects | nindent 2 }}
+roleRef: {{ toYaml .Values.roleBinding.roleRef | nindent 2 }}
+{{- end }}

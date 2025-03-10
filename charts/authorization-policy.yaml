@@ -1,0 +1,11 @@
+{{- if .Values.authorizationPolicy.enabled }}
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "my-app-template.fullname" . }}-auth-policy
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "my-app-template.name" . }}
+  rules: {{ toYaml .Values.authorizationPolicy.rules | nindent 2 }}
+{{- end }}

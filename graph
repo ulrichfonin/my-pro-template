@@ -1,0 +1,18 @@
+my-pro-template/
+├── charts/
+├── templates/
+│   ├── deployment.yaml                # App Deployment (optional if using StatefulSet)
+│   ├── service.yaml                   # Kubernetes Service
+│   ├── statefulset.yaml               # StatefulSet for persistent apps
+│   ├── virtualservice.yaml            # Istio VirtualService
+│   ├── role.yaml                      # Kubernetes RBAC Role
+│   ├── rolebinding.yaml               # Kubernetes RBAC RoleBinding
+│   ├── customresource.yaml            # Custom Resource (CR)
+│   ├── networkpolicy.yaml             # Kubernetes NetworkPolicy
+│   ├── authorizationpolicy.yaml       # Istio AuthorizationPolicy
+│   ├── peerauthentication.yaml        # Istio PeerAuthentication
+│   ├── serviceentry.yaml              # Istio ServiceEntry for external services
+│   ├── sidecar.yaml                   # Istio Sidecar config
+│   └── _helpers.tpl                   # Helper templates for names/labels
+├── values.yaml                        # Default values, toggle features
+└── Chart.yaml                         # Helm chart metadata

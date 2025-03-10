@@ -1,0 +1,73 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+virtualService:
+  enabled: true
+  hosts: ["example.com"]
+  gateways: ["my-gateway"]
+  http:
+    - route:
+        - destination:
+            host: my-app
+            port:
+              number: 80
+
+role:
+  enabled: true
+  rules:
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get", "watch", "list"]
+
+roleBinding:
+  enabled: true
+  subjects:
+    - kind: ServiceAccount
+      name: default
+  roleRef:
+    kind: Role
+    name: my-app-role
+    apiGroup: rbac.authorization.k8s.io
+
+customResource:
+  enabled: true
+  kind: MyCustomResource
+  apiVersion: mygroup/v1
+  spec:
+    key: value
+
+networkPolicy:
+  enabled: true
+  ingress: []
+
+authorizationPolicy:
+  enabled: true
+  rules: []
+
+peerAuthentication:
+  enabled: true
+  mtls:
+    mode: STRICT
+
+serviceEntry:
+  enabled: true
+  hosts: ["external.com"]
+  addresses: []
+  ports:
+    - number: 80
+      name: http
+      protocol: HTTP
+
+sidecar:
+  enabled: true
+  egressHosts: ["*"]

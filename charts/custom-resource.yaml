@@ -1,0 +1,7 @@
+{{- if .Values.customResource.enabled }}
+apiVersion: {{ .Values.customResource.apiVersion }}
+kind: {{ .Values.customResource.kind }}
+metadata:
+  name: {{ include "my-app-template.fullname" . }}-cr
+spec: {{ toYaml .Values.customResource.spec | nindent 2 }}
+{{- end }}

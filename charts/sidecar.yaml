@@ -1,0 +1,9 @@
+{{- if .Values.sidecar.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: {{ include "my-pro-template.fullname" . }}-sidecar
+spec:
+  egress:
+  - hosts: {{ toYaml .Values.sidecar.egressHosts | nindent 4 }}
+{{- end }}
