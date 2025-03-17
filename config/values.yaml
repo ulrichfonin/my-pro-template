@@ -1,0 +1,89 @@
+{{- range .Values.virtualServices }}
+{{- if .enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "my-pro-template.labels" $ | nindent 4 }}
+spec:
+  hosts:
+    {{- range .hosts }}
+    - {{ . }}
+    {{- end }}
+
+  gateways:
+    {{- range .gateways }}
+    - {{ . }}
+    {{- end }}
+
+  http:
+    {{- range .http }}
+    - match:
+        {{- range .match }}
+        - uri:
+            {{- toYaml .uri | nindent 12 }}
+        {{- end }}
+      route:
+        {{- range .route }}
+        - destination:
+            host: {{ .destination.host }}
+            port:
+              number: {{ .destination.port.number }}
+        {{- end }}
+    {{- end }}
+---
+{{- end }}
+{{- end }}
+
+
+
+virtualServices:
+  - enabled: true
+    name: my-app-main
+    hosts:
+      - my-app.example.com
+    gateways:
+      - my-gateway
+    http:
+      - match:
+          - uri:
+              prefix: /api
+        route:
+          - destination:
+              host: my-app-svc
+              port:
+                number: 80
+
+  - enabled: true
+    name: my-app-admin
+    hosts:
+      - admin.example.com
+    gateways:
+      - my-gateway
+    http:
+      - match:
+          - uri:
+              prefix: /admin
+        route:
+          - destination:
+              host: my-app-admin-svc
+              port:
+                number: 8080
+
+  - enabled: false  # Example of a disabled VirtualService (will not be created)
+    name: optional-service
+    hosts:
+      - optional.example.com
+    gateways:
+      - mesh
+    http:
+      - match:
+          - uri:
+              prefix: /optional
+        route:
+          - destination:
+              host: optional-svc
+              port:
+                number: 9090
