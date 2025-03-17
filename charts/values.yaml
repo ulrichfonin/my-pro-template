@@ -1,82 +1,45 @@
 networkPolicy:
-  enabled: true  # Set to false if team doesn't need NetworkPolicy
+  enabled: true  # Enable or disable the NetworkPolicy
 
-  # Default policy types (Ingress and Egress); teams can adjust as needed
   policyTypes:
     - Ingress
-    - Egress
+    - Egress  # You can choose to only have one if desired
 
-  # Define list of allowed ingress traffic
+  # List of Ingress rules (can be empty list [])
   ingress:
-    # Example entry:
-    # - from:
-    #     - podSelector:
-    #         matchLabels:
-    #           app: some-app
-    #   ports:
-    #     - protocol: TCP
-    #       port: 8080
-    # Teams can add multiple ingress rules as below:
+    # Example 1
     - from:
         - podSelector:
             matchLabels:
-              app: "{{ .Values.networkPolicy.ingressApp1Selector | default "app1" }}"
+              app: internal-api-gateway
       ports:
         - protocol: TCP
-          port: {{ .Values.networkPolicy.ingressApp1Port | default 8080 }}
+          port: 8080
 
+    # Example 2
     - from:
         - namespaceSelector:
             matchLabels:
-              name: "{{ .Values.networkPolicy.ingressNamespace2 | default "monitoring" }}"
+              name: monitoring
       ports:
         - protocol: TCP
-          port: {{ .Values.networkPolicy.ingressNamespace2Port | default 9100 }}
+          port: 9100
 
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              name: "{{ .Values.networkPolicy.appNamespace | default .Release.Namespace }}"
-      ports:
-        - protocol: TCP
-          port: {{ .Values.networkPolicy.ingressAppNamespacePort | default 8081 }}
-
-    - from:
-        - ipBlock:
-            cidr: "{{ .Values.networkPolicy.ingressIpBlock | default "192.168.100.0/24" }}"
-      ports:
-        - protocol: TCP
-          port: {{ .Values.networkPolicy.ingressIpBlockPort | default 8443 }}
-
-  # Define list of allowed egress traffic
+  # List of Egress rules (can be empty list [])
   egress:
+    # Example 1
     - to:
         - namespaceSelector:
             matchLabels:
-              name: "{{ .Values.networkPolicy.egressNamespace1 | default "database" }}"
+              name: database
       ports:
         - protocol: TCP
-          port: {{ .Values.networkPolicy.egressNamespace1Port | default 5432 }}
+          port: 5432
 
+    # Example 2
     - to:
         - ipBlock:
-            cidr: "{{ .Values.networkPolicy.egressIpBlock | default "0.0.0.0/0" }}"  # Public internet
+            cidr: 0.0.0.0/0  # Open internet (use with caution)
       ports:
         - protocol: TCP
-          port: {{ .Values.networkPolicy.egressIpBlockPort | default 443 }}
-
-    - to:
-        - podSelector:
-            matchLabels:
-              app: "{{ .Values.networkPolicy.egressPodSelector | default "redis" }}"
-      ports:
-        - protocol: TCP
-          port: {{ .Values.networkPolicy.egressPodPort | default 6379 }}
-
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              name: "{{ .Values.networkPolicy.egressDnsNamespace | default "kube-system" }}"
-      ports:
-        - protocol: UDP
-          port: {{ .Values.networkPolicy.egressDnsPort | default 53 }}
+          port: 443

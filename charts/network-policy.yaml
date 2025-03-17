@@ -12,12 +12,7 @@ spec:
       {{- include "my-pro-template.selectorLabels" . | nindent 6 }}
 
   policyTypes:
-    {{- if .Values.networkPolicy.policyTypes }}
     {{- toYaml .Values.networkPolicy.policyTypes | nindent 4 }}
-    {{- else }}
-    - Ingress
-    - Egress
-    {{- end }}
 
   ingress:
     {{- if .Values.networkPolicy.ingress }}
@@ -46,7 +41,7 @@ spec:
         {{- end }}
     {{- end }}
     {{- else }}
-    []  # Deny all ingress by default
+    []  # Deny all ingress if not defined
     {{- end }}
 
   egress:
@@ -76,6 +71,6 @@ spec:
         {{- end }}
     {{- end }}
     {{- else }}
-    []  # Deny all egress by default
+    []  # Deny all egress if not defined
     {{- end }}
 {{- end }}
