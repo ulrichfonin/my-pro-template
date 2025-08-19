@@ -1,0 +1,45 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: strip-imagepullsecrets-by-default
+  annotations:
+    policies.kyverno.io/title: Strip imagePullSecrets by default
+    policies.kyverno.io/category: Reliability
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >
+      Removes spec.imagePullSecrets from Pods unless explicitly allowed by a namespace label
+      or a workload annotation. Prevents FailedToRetrieveImagePullSecret warnings.
+spec:
+  background: false
+  rules:
+    - name: remove-imagepullsecrets-from-pods
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      exclude:
+        any:
+          - resources:
+              namespaces: ["kube-system","kyverno"]
+      preconditions:
+        all:
+          # Only mutate if the field exists and is non-empty
+          - key: "{{ length(request.object.spec.imagePullSecrets || `[]`) }}"
+            operator: GreaterThan
+            value: 0
+          # Skip if namespace explicitly allows it
+          - key: "{{ request.namespace_labels.\"workloads-allow-imagepullsecrets\" || 'false' }}"
+            operator: Equals
+            value: "false"
+          # Skip if workload explicitly allows it
+          - key: "{{ request.object.metadata.annotations.\"workload.allow-imagepullsecrets\" || 'false' }}"
+            operator: Equals
+            value: "false"
+      mutate:
+        patchesJson6902: |-
+          - op: remove
+            path: /spec/imagePullSecrets
+
+---
+
+
