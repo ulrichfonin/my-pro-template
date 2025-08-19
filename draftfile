@@ -49,3 +49,9 @@ kubectl -n $NS get events \
 
   SA=$(kubectl -n $NS get pod $POD -o jsonpath='{.spec.serviceAccountName}'); [ -z "$SA" ] && SA=default
 kubectl -n $NS get sa $SA -o yaml | yq '.imagePullSecrets'
+
+NS=<pod-namespace>
+POD=<pod-name>
+kubectl -n $NS get events \
+  --field-selector involvedObject.kind=Pod,involvedObject.name=$POD \
+  -o wide | grep -i 'imagepullsecret' -C1
