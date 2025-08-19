@@ -43,3 +43,9 @@ spec:
 ---
 
 
+kubectl -n $NS get events \
+  --field-selector involvedObject.kind=Pod,involvedObject.name=$POD \
+  -o wide | grep -i 'imagepullsecret' -C1
+
+  SA=$(kubectl -n $NS get pod $POD -o jsonpath='{.spec.serviceAccountName}'); [ -z "$SA" ] && SA=default
+kubectl -n $NS get sa $SA -o yaml | yq '.imagePullSecrets'
